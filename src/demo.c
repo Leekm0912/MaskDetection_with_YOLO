@@ -103,6 +103,8 @@ double get_wall_time()
     return (double)walltime.tv_sec + (double)walltime.tv_usec * .000001;
 }
 
+
+// 비디오 실행
 void demo(char *cfgfile, char *weightfile, float thresh, float hier_thresh, int cam_index, const char *filename, char **names, int classes,
     int frame_skip, char *prefix, char *out_filename, int mjpeg_port, int json_port, int dont_show, int ext_output, int letter_box_in)
 {
@@ -220,14 +222,22 @@ void demo(char *cfgfile, char *weightfile, float thresh, float hier_thresh, int 
             //printf("\nFPS:%.1f\n", fps);
             printf("Objects:\n\n");
 
+            //수정==============
+            /*FILE* fp4 = fopen("__test3.txt", "a");
+            fprintf(fp4, "filename:%s\n", filename);*/
+            //==================
+
             ++frame_id;
             if (demo_json_port > 0) {
                 int timeout = 400000;
                 send_json(local_dets, local_nboxes, l.classes, demo_names, frame_id, demo_json_port, timeout);
             }
 
+            // draw_detections_cv_v3() 이 함수로 상자 그리는듯.
+            
             draw_detections_cv_v3(show_img, local_dets, local_nboxes, demo_thresh, demo_names, demo_alphabet, demo_classes, demo_ext_output);
             free_detections(local_dets, local_nboxes);
+            
 
             printf("\nFPS:%.1f\n", fps);
 

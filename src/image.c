@@ -311,6 +311,9 @@ void draw_detections_v3(image im, detection *dets, int num, float thresh, char *
 
     int selected_detections_num;
     detection_with_class* selected_detections = get_actual_detections(dets, num, thresh, &selected_detections_num, names);
+    // 수정=================
+    //FILE* fp = fopen("__test.txt","a");
+    // ======================
 
     // text output
     qsort(selected_detections, selected_detections_num, sizeof(*selected_detections), compare_by_lefts);
@@ -318,17 +321,39 @@ void draw_detections_v3(image im, detection *dets, int num, float thresh, char *
     for (i = 0; i < selected_detections_num; ++i) {
         const int best_class = selected_detections[i].best_class;
         printf("%s: %.0f%%", names[best_class],    selected_detections[i].det.prob[best_class] * 100);
-        if (ext_output)
+        
+
+        //수정===========================
+        //찾은 객체 이름이랑 정확도 출력
+        //fprintf(fp,"%s: %.0f%%", names[best_class], selected_detections[i].det.prob[best_class] * 100);
+        //===============================
+
+        if (ext_output){
             printf("\t(left_x: %4.0f   top_y: %4.0f   width: %4.0f   height: %4.0f)\n",
                 round((selected_detections[i].det.bbox.x - selected_detections[i].det.bbox.w / 2)*im.w),
                 round((selected_detections[i].det.bbox.y - selected_detections[i].det.bbox.h / 2)*im.h),
                 round(selected_detections[i].det.bbox.w*im.w), round(selected_detections[i].det.bbox.h*im.h));
-        else
+            //수정===================
+            /*fprintf(fp,"\t(left_x: %4.0f   top_y: %4.0f   width: %4.0f   height: %4.0f)\n",
+                round((selected_detections[i].det.bbox.x - selected_detections[i].det.bbox.w / 2)*im.w),
+                round((selected_detections[i].det.bbox.y - selected_detections[i].det.bbox.h / 2)*im.h),
+                round(selected_detections[i].det.bbox.w*im.w), round(selected_detections[i].det.bbox.h*im.h));*/
+            //=======================
+        }
+            
+        else {
             printf("\n");
+            //수정=============
+            //fprintf(fp,"\n");
+            //=================
+        }
         int j;
         for (j = 0; j < classes; ++j) {
             if (selected_detections[i].det.prob[j] > thresh && j != best_class) {
                 printf("%s: %.0f%%\n", names[j], selected_detections[i].det.prob[j] * 100);
+                //수정=================
+                //fprintf(fp,"%s: %.0f%%\n", names[j], selected_detections[i].det.prob[j] * 100);
+                //=====================
             }
         }
     }
@@ -371,6 +396,11 @@ void draw_detections_v3(image im, detection *dets, int num, float thresh, char *
             if (right > im.w - 1) right = im.w - 1;
             if (top < 0) top = 0;
             if (bot > im.h - 1) bot = im.h - 1;
+
+            //수정==================
+            //동영상 좌표 출력
+            //fprintf(fp3, "\nleft : %d\tright : %d\ttop : %d\tbot : %d\n", left, right, top, bot);
+            //======================
 
             //int b_x_center = (left + right) / 2;
             //int b_y_center = (top + bot) / 2;
@@ -431,7 +461,6 @@ void draw_detections_v3(image im, detection *dets, int num, float thresh, char *
 void draw_detections(image im, int num, float thresh, box *boxes, float **probs, char **names, image **alphabet, int classes)
 {
     int i;
-
     for(i = 0; i < num; ++i){
         int class_id = max_index(probs[i], classes);
         float prob = probs[i][class_id];
